@@ -348,7 +348,17 @@ class File < LogStash::Inputs::Base
     @path.each { |path| @watcher.watch_this(path) }
   end
 
+  require "logstash/util/loggable"
+  class SmtThatIncludesLoggable
+    include LogStash::Util::Loggable
+
+    def initialize
+      puts logger # initializing logger causes ArrayIndexOutOfBoundsException
+    end
+  end
+
   def run(queue)
+    SmtThatIncludesLoggable.new
     start_processing
     @queue = queue
     @watcher.subscribe(self) # halts here until quit is called
